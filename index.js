@@ -1,39 +1,64 @@
-const Discord = require('discord.js')
-const fs = require('fs')
-const bot = new Discord.Client()
-const config = require("./config.json")
-bot.commands = new Discord.Collection()
+const Util = require('./util/Util');
 
-fs.readdir('./commands' , (err , files) => {
-  if (err) console.log(err)
+module.exports = {
+  // "Root" classes (starting points)
+  Client: require('./client/Client'),
+  Shard: require('./sharding/Shard'),
+  ShardClientUtil: require('./sharding/ShardClientUtil'),
+  ShardingManager: require('./sharding/ShardingManager'),
+  WebhookClient: require('./client/WebhookClient'),
 
-  let jsfile = files.filter(f => f.split('.').pop() === 'js')
-  if(jsfile.length <= 0) return console.log('Команды не найдены!')
+  // Utilities
+  Collection: require('./util/Collection'),
+  Constants: require('./util/Constants'),
+  DiscordAPIError: require('./client/rest/DiscordAPIError'),
+  EvaluatedPermissions: require('./util/Permissions'),
+  Permissions: require('./util/Permissions'),
+  Snowflake: require('./util/Snowflake'),
+  SnowflakeUtil: require('./util/Snowflake'),
+  Util: Util,
+  util: Util,
+  version: require('../package').version,
 
-  console.log(`Loaded ${jsfile.length} commands`)
-  jsfile.forEach((f , i) => {
-    let props = require(`./commands/${f}`)
-    bot.commands.set(props.help.name, props)
-  })
-})
+  // Shortcuts to Util methods
+  escapeMarkdown: Util.escapeMarkdown,
+  fetchRecommendedShards: Util.fetchRecommendedShards,
+  splitMessage: Util.splitMessage,
 
-bot.on('message' , async message => {
-  let prefix = config.prefix;
-  let messageArray = message.content.split(' ')
-  let command = messageArray[0]
-  let args = messageArray.slice(1)
-
-  let command_file = bot.commands.get(command.slice(prefix.length))
-  if (command_file) command_file.run(bot , message , args) 
- 
- 
-  if (message.content.startWith(prefix + 'Привет')){
-    message.channel.send('Привет!')
-  }
-}) 
-
-bot.login(config.token);
-bot.on('ready' , () => {
-  console.log(`${bot.user.username} online `);
-  bot.user.setPresence({status: 'dnd' , game:{name: 'Beta Test 2.0' , type: 3}});
-})
+  // Structures
+  Attachment: require('./structures/Attachment'),
+  CategoryChannel: require('./structures/CategoryChannel'),
+  Channel: require('./structures/Channel'),
+  ClientUser: require('./structures/ClientUser'),
+  ClientUserSettings: require('./structures/ClientUserSettings'),
+  Collector: require('./structures/interfaces/Collector'),
+  DMChannel: require('./structures/DMChannel'),
+  Emoji: require('./structures/Emoji'),
+  Game: require('./structures/Presence').Game,
+  GroupDMChannel: require('./structures/GroupDMChannel'),
+  Guild: require('./structures/Guild'),
+  GuildAuditLogs: require('./structures/GuildAuditLogs'),
+  GuildChannel: require('./structures/GuildChannel'),
+  GuildMember: require('./structures/GuildMember'),
+  Invite: require('./structures/Invite'),
+  Message: require('./structures/Message'),
+  MessageAttachment: require('./structures/MessageAttachment'),
+  MessageCollector: require('./structures/MessageCollector'),
+  MessageEmbed: require('./structures/MessageEmbed'),
+  MessageMentions: require('./structures/MessageMentions'),
+  MessageReaction: require('./structures/MessageReaction'),
+  OAuth2Application: require('./structures/OAuth2Application'),
+  ClientOAuth2Application: require('./structures/OAuth2Application'),
+  PartialGuild: require('./structures/PartialGuild'),
+  PartialGuildChannel: require('./structures/PartialGuildChannel'),
+  PermissionOverwrites: require('./structures/PermissionOverwrites'),
+  Presence: require('./structures/Presence').Presence,
+  ReactionEmoji: require('./structures/ReactionEmoji'),
+  ReactionCollector: require('./structures/ReactionCollector'),
+  RichEmbed: require('./structures/RichEmbed'),
+  Role: require('./structures/Role'),
+  TextChannel: require('./structures/TextChannel'),
+  User: require('./structures/User'),
+  VoiceChannel: require('./structures/VoiceChannel'),
+  Webhook: require('./structures/Webhook'),
+};
